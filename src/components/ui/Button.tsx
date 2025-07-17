@@ -1,3 +1,7 @@
+import React from 'react';
+import { motion } from 'framer-motion';
+import { Loader2 } from 'lucide-react';
+
 interface ButtonProps {
   children: React.ReactNode;
   variant?: 'primary' | 'secondary' | 'outline' | 'ghost' | 'accent';
@@ -7,7 +11,7 @@ interface ButtonProps {
   onClick?: () => void;
   className?: string;
   type?: 'button' | 'submit' | 'reset';
-  as?: 'button' | 'span';
+  as?: React.ElementType;
 }
 
 export const Button: React.FC<ButtonProps> = ({
@@ -19,16 +23,16 @@ export const Button: React.FC<ButtonProps> = ({
   onClick,
   className = '',
   type = 'button',
-  as = 'button',
+  as: Component = 'button',
 }) => {
   const baseClasses = 'inline-flex items-center justify-center font-medium rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-900';
-
+  
   const variantClasses = {
-    primary: 'bg-blue-600 hover:bg-blue-700 text-white focus:ring-blue-500',
-    secondary: 'bg-gray-600 hover:bg-gray-700 text-white focus:ring-gray-500',
-    outline: 'border border-gray-300 hover:bg-gray-50 text-gray-700 focus:ring-gray-500',
-    ghost: 'hover:bg-gray-100 text-gray-700 focus:ring-gray-500',
-    accent: 'bg-purple-600 hover:bg-purple-700 text-white focus:ring-purple-500'
+    primary: 'bg-indigo-600 text-white hover:bg-indigo-700 focus:ring-indigo-500 glow-blue',
+    secondary: 'bg-blue-500 text-white hover:bg-blue-600 focus:ring-blue-500',
+    accent: 'bg-green-400 text-gray-900 hover:bg-green-300 focus:ring-green-400 glow-green',
+    outline: 'border-2 border-indigo-600 text-indigo-400 hover:bg-indigo-600 hover:text-white focus:ring-indigo-500',
+    ghost: 'text-gray-300 hover:bg-white/10 focus:ring-gray-500'
   };
 
   const sizeClasses = {
@@ -39,18 +43,21 @@ export const Button: React.FC<ButtonProps> = ({
 
   const isDisabled = disabled || loading;
 
-  const Component = as;
-  
+  const buttonProps = Component === 'button' ? { type, disabled: isDisabled } : {};
+
   return (
     <motion.div
-      as={Component}
       whileHover={!isDisabled ? { scale: 1.02 } : {}}
       whileTap={!isDisabled ? { scale: 0.98 } : {}}
-      {...(as === 'button' ? { type, onClick, disabled: isDisabled } : { onClick })}
-      className={`${baseClasses} ${variantClasses[variant]} ${sizeClasses[size]} ${isDisabled ? 'opacity-50 cursor-not-allowed' : ''} ${className}`}
     >
-      {loading && <Loader2 className="w-4 h-4 animate-spin mr-2" />}
-      {children}
+      <Component
+        onClick={onClick}
+        className={`${baseClasses} ${variantClasses[variant]} ${sizeClasses[size]} ${isDisabled ? 'opacity-50 cursor-not-allowed' : ''} ${className}`}
+        {...buttonProps}
+      >
+        {loading && <Loader2 className="w-4 h-4 animate-spin mr-2" />}
+        {children}
+      </Component>
     </motion.div>
   );
 };
